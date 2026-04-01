@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes border-spin {
+  0% {
+    border-image: linear-gradient(0deg, #ff4d6d, #ff8fa3, #ffc2d1, #ffffff) 1;
+  }
+  25% {
+    border-image: linear-gradient(90deg, #ff4d6d, #ff8fa3, #ffc2d1, #ffffff) 1;
+  }
+  50% {
+    border-image: linear-gradient(180deg, #ff4d6d, #ff8fa3, #ffc2d1, #ffffff) 1;
+  }
+  75% {
+    border-image: linear-gradient(270deg, #ff4d6d, #ff8fa3, #ffc2d1, #ffffff) 1;
+  }
+  100% {
+    border-image: linear-gradient(360deg, #ff4d6d, #ff8fa3, #ffc2d1, #ffffff) 1;
+  }
+}
+
+.animate-border-spin {
+  animation: border-spin 4s linear infinite;
+}
+
+.animate-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: #ff6281;
+  z-index: -1;
+  animation: border-spin 4s linear infinite;
+}
