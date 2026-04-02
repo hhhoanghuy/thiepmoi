@@ -21,37 +21,48 @@ export default function SpotifyButton({
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const togglePlay = async () => {
-    if (!audioRef.current) return;
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    try {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        await audioRef.current.play(); // fix mobile async
-        setIsPlaying(true);
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      const playPromise = audio.play();
+
+      // handle trường hợp bị browser chặn
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.log("Play bị chặn:", err);
+          });
       }
-    } catch (err) {
-      console.log("Play bị chặn:", err);
     }
   };
 
   return (
     <Button
       className={`
-        w-full max-w-md h-16 p-0 overflow-hidden bg-white/20 backdrop-blur-md hover:bg-white/30 group
-        relative
-        ${isPlaying ? "animate-border" : ""}
-      `}
-      onClick={togglePlay} // ❗ bỏ onTouchStart
+                w-full max-w-md h-16 p-0 overflow-hidden 
+                bg-white/20 backdrop-blur-md hover:bg-white/30 
+                group relative
+                ${isPlaying ? "animate-border" : ""}
+            `}
+      onTouchStart={togglePlay}
     >
-      <audio ref={audioRef} src={flacSrc} />
+      <audio ref={audioRef} src={flacSrc} preload="auto" />
+
       <div className="flex items-center w-full px-3 gap-3">
+        {/* Album Art */}
         <div className="relative w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
           <Image src={albumArt} alt={songTitle} fill className="object-cover" />
         </div>
 
+        {/* Text */}
         <div className="flex flex-col items-start flex-grow min-w-0">
           <span className="text-white text-sm font-medium truncate w-full">
             {songTitle}
@@ -61,6 +72,7 @@ export default function SpotifyButton({
           </span>
         </div>
 
+        {/* Icon */}
         <div className="flex-shrink-0 text-white">
           {isPlaying ? (
             <PauseIcon className="w-6 h-6" />
